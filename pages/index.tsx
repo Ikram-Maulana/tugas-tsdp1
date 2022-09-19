@@ -2,11 +2,9 @@ import {
   Box,
   Button,
   Code,
-  color,
   Container,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Grid,
@@ -42,28 +40,36 @@ import { useRef } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { FaCalculator, FaInfo, FaSave } from "react-icons/fa";
 import Layout, { siteTitle } from "../components/Layout";
-import { gradesAverage } from "../utils/Data";
+import { gradesAverage, gradesRule } from "../utils/Data";
 
 export const getStaticProps: GetStaticProps = async () => {
-  const data = await gradesAverage();
+  const dataGradesAverage = await gradesAverage();
+  const dataGradesRule = await gradesRule();
 
   return {
     props: {
-      dataGradesAverage: data,
+      dataGradesAverage,
+      dataGradesRule,
     },
   };
 };
 
-interface gradesAverageProps {
+interface gradesProps {
   dataGradesAverage: {
     id: number;
     label: string;
     value: number;
     maxVal: number;
   }[];
+  dataGradesRule: {
+    id: number;
+    predikat: string;
+    interval: string;
+    keterangan: string;
+  }[];
 }
 
-const Home = ({ dataGradesAverage }: gradesAverageProps) => {
+const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
 
@@ -373,36 +379,14 @@ const Home = ({ dataGradesAverage }: gradesAverageProps) => {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>1</Td>
-                  <Td>A</Td>
-                  <Td>70-100</Td>
-                  <Td>Sangat Baik</Td>
-                </Tr>
-                <Tr>
-                  <Td>2</Td>
-                  <Td>B</Td>
-                  <Td>60-69</Td>
-                  <Td>Baik</Td>
-                </Tr>
-                <Tr>
-                  <Td>3</Td>
-                  <Td>C</Td>
-                  <Td>50-59</Td>
-                  <Td>Cukup</Td>
-                </Tr>
-                <Tr>
-                  <Td>4</Td>
-                  <Td>D</Td>
-                  <Td>40-49</Td>
-                  <Td>Kurang</Td>
-                </Tr>
-                <Tr>
-                  <Td>5</Td>
-                  <Td>E</Td>
-                  <Td>0-39</Td>
-                  <Td>Gagal</Td>
-                </Tr>
+                {dataGradesRule.map((item, index) => (
+                  <Tr key={index}>
+                    <Td>{index + 1}</Td>
+                    <Td>{item.predikat}</Td>
+                    <Td>{item.interval}</Td>
+                    <Td>{item.keterangan}</Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>
