@@ -3,6 +3,10 @@ import {
   Button,
   Container,
   Flex,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
   Heading,
   Modal,
   ModalBody,
@@ -11,6 +15,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Stack,
   Text,
   useDisclosure,
@@ -18,7 +27,7 @@ import {
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRef } from "react";
-import { FaInfo } from "react-icons/fa";
+import { FaInfo, FaLightbulb, FaSave } from "react-icons/fa";
 import Layout, { siteTitle } from "../components/Layout";
 
 const Home: NextPage = () => {
@@ -32,7 +41,11 @@ const Home: NextPage = () => {
       </Head>
 
       <Container as={Stack} maxW={"6xl"} py={{ base: "4", md: "8" }}>
-        <Flex direction={{ base: "column", md: "row" }}>
+        {/* Top */}
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          mb={{ base: "4", md: "8" }}
+        >
           <Box flex="1">
             <Heading color={"#16173D"}>Calculate Student Grades 🧮</Heading>
             <Text color={"#818FA2"}>
@@ -43,7 +56,7 @@ const Home: NextPage = () => {
           <Stack
             justifyContent={{ base: "start", md: "center" }}
             alignItems={{ base: "start", md: "center" }}
-            mt={{ base: "3", md: "0" }}
+            mt={{ base: "2", md: "0" }}
           >
             <Button
               onClick={onOpen}
@@ -55,8 +68,162 @@ const Home: NextPage = () => {
             </Button>
           </Stack>
         </Flex>
+
+        {/* Main Input */}
+        <Grid
+          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
+          templateRows={{ base: "repeat(2, 1fr)", md: "repeat(1, 1fr)" }}
+          gap={4}
+        >
+          <GridItem
+            border={"1px"}
+            borderColor={"gray.200"}
+            width={"full"}
+            padding={"0.75rem"}
+            rounded={"12px"}
+          >
+            <Heading size="md" color={"#16173D"} as="h2">
+              Grades Weight
+            </Heading>
+            <form>
+              <FormControl mt={{ base: "2", md: "4" }}>
+                <FormLabel>Kehadiran</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>Tugas</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>UTS</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>UAS</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>Project</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <Button
+                leftIcon={<FaSave />}
+                bgColor={"#242562"}
+                color={"white"}
+                _hover={{ bgColor: "#16173D" }}
+                mt={{ base: "3", md: "4" }}
+              >
+                Save
+              </Button>
+            </form>
+          </GridItem>
+
+          <GridItem
+            border={"1px"}
+            borderColor={"gray.200"}
+            width={"full"}
+            padding={"0.75rem"}
+            rounded={"12px"}
+          >
+            <Heading size="md" color={"#16173D"} as="h2">
+              Grades Average
+            </Heading>
+            <form>
+              <FormControl mt={{ base: "2", md: "4" }}>
+                <FormLabel>Kehadiran</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>Tugas</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>UTS</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>UAS</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <FormControl mt={{ base: "2", md: "3" }}>
+                <FormLabel>Project</FormLabel>
+                <NumberInput max={100} min={0}>
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+              <Button
+                leftIcon={<FaLightbulb />}
+                bgColor={"#242562"}
+                color={"white"}
+                _hover={{ bgColor: "#16173D" }}
+                mt={{ base: "3", md: "4" }}
+              >
+                Predict
+              </Button>
+            </form>
+          </GridItem>
+        </Grid>
       </Container>
 
+      {/* Modal */}
       <Modal
         onClose={onClose}
         finalFocusRef={btnRef}
