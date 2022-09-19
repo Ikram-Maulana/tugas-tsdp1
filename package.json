@@ -12,10 +12,12 @@
     "@chakra-ui/react": "^2.3.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "axios": "^0.27.2",
     "framer-motion": "^6",
     "next": "12.3.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.35.0"
   },
   "devDependencies": {
     "@types/node": "18.7.18",

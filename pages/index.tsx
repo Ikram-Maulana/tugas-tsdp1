@@ -2,9 +2,12 @@ import {
   Box,
   Button,
   Code,
+  color,
   Container,
   Flex,
   FormControl,
+  FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Grid,
   GridItem,
@@ -33,15 +36,43 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import type { NextPage } from "next";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 import { useRef } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { FaCalculator, FaInfo, FaSave } from "react-icons/fa";
 import Layout, { siteTitle } from "../components/Layout";
+import { gradesAverage } from "../utils/Data";
 
-const Home: NextPage = () => {
+export const getStaticProps: GetStaticProps = async () => {
+  const data = await gradesAverage();
+
+  return {
+    props: {
+      dataGradesAverage: data,
+    },
+  };
+};
+
+interface gradesAverageProps {
+  dataGradesAverage: {
+    id: number;
+    label: string;
+    value: number;
+    maxVal: number;
+  }[];
+}
+
+const Home = ({ dataGradesAverage }: gradesAverageProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit: SubmitHandler<FieldValues> = (data) => console.log(data);
 
   return (
     <Layout>
@@ -183,56 +214,131 @@ const Home: NextPage = () => {
               <Heading size="md" color={"#16173D"} as="h2">
                 Grades Average
               </Heading>
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl mt={{ base: "2", md: "4" }}>
                   <FormLabel>Kehadiran</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
+                  <NumberInput
+                    max={dataGradesAverage[0].maxVal}
+                    min={0}
+                    defaultValue={dataGradesAverage[0].value}
+                  >
+                    <NumberInputField
+                      {...register("kehadiran", {
+                        max: dataGradesAverage[0].maxVal,
+                        min: 0,
+                      })}
+                    />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
                     </NumberInputStepper>
                   </NumberInput>
+                  {errors.kehadiran && (
+                    <FormHelperText color="red">
+                      Max value is {dataGradesAverage[0].maxVal} and min value
+                      is 0.
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl mt={{ base: "2", md: "3" }}>
                   <FormLabel>Tugas</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
+                  <NumberInput
+                    max={dataGradesAverage[1].maxVal}
+                    min={0}
+                    defaultValue={dataGradesAverage[1].value}
+                  >
+                    <NumberInputField
+                      {...register("tugas", {
+                        max: dataGradesAverage[1].maxVal,
+                        min: 0,
+                      })}
+                    />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
                     </NumberInputStepper>
                   </NumberInput>
+                  {errors.tugas && (
+                    <FormHelperText color="red">
+                      Max value is {dataGradesAverage[1].maxVal} and min value
+                      is 0.
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl mt={{ base: "2", md: "3" }}>
                   <FormLabel>UTS</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
+                  <NumberInput
+                    max={dataGradesAverage[2].maxVal}
+                    min={0}
+                    defaultValue={dataGradesAverage[2].value}
+                  >
+                    <NumberInputField
+                      {...register("uts", {
+                        max: dataGradesAverage[2].maxVal,
+                        min: 0,
+                      })}
+                    />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
                     </NumberInputStepper>
                   </NumberInput>
+                  {errors.uts && (
+                    <FormHelperText color="red">
+                      Max value is {dataGradesAverage[2].maxVal} and min value
+                      is 0.
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl mt={{ base: "2", md: "3" }}>
                   <FormLabel>UAS</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
+                  <NumberInput
+                    max={dataGradesAverage[3].maxVal}
+                    min={0}
+                    defaultValue={dataGradesAverage[3].value}
+                  >
+                    <NumberInputField
+                      {...register("uas", {
+                        max: dataGradesAverage[3].maxVal,
+                        min: 0,
+                      })}
+                    />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
                     </NumberInputStepper>
                   </NumberInput>
+                  {errors.uas && (
+                    <FormHelperText color="red">
+                      Max value is {dataGradesAverage[3].maxVal} and min value
+                      is 0.
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl mt={{ base: "2", md: "3" }}>
                   <FormLabel>Project</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
+                  <NumberInput
+                    max={dataGradesAverage[4].maxVal}
+                    min={0}
+                    defaultValue={dataGradesAverage[4].value}
+                  >
+                    <NumberInputField
+                      {...register("project", {
+                        max: dataGradesAverage[4].maxVal,
+                        min: 0,
+                      })}
+                    />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
                     </NumberInputStepper>
                   </NumberInput>
+                  {errors.project && (
+                    <FormHelperText color="red">
+                      Max value is {dataGradesAverage[4].maxVal} and min value
+                      is 0.
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <Button
                   leftIcon={<FaCalculator />}
@@ -240,6 +346,7 @@ const Home: NextPage = () => {
                   color={"white"}
                   _hover={{ bgColor: "#16173D" }}
                   mt={{ base: "3", md: "4" }}
+                  type="submit"
                 >
                   Calculate
                 </Button>
