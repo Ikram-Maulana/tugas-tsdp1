@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Code,
   Container,
   Flex,
   FormControl,
@@ -314,30 +315,11 @@ const Home: NextPage = () => {
           <ModalCloseButton />
           <ModalBody>
             <Text>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odio
-              quidem aspernatur laborum illo cupiditate ea libero, dignissimos
-              ut tenetur consequuntur quibusdam ratione, excepturi esse deleniti
-              voluptas, numquam aliquam laboriosam ex inventore nesciunt!
-              Voluptates explicabo dolor voluptatibus fugit ut optio non ea quas
-              perferendis eveniet eum quidem velit quae consequatur nihil est,
-              exercitationem vero harum molestias eaque, corrupti beatae
-              architecto totam. Enim illo sapiente harum voluptas odio. Veniam
-              facere temporibus corporis quasi eveniet sed corrupti fuga, id
-              dicta animi illum ut, magni ullam modi dolores, error praesentium.
-              Doloremque illum laborum modi provident eaque quae esse,
-              praesentium, amet quaerat aliquam nihil tenetur eos vel odio
-              velit, ipsa nobis explicabo ex consectetur officia? Cupiditate id
-              unde inventore, deserunt fugit earum modi error libero illo eos
-              eius ab asperiores sed natus facilis laudantium, aut rem dolorem
-              perspiciatis quasi, eum animi qui magni? Eveniet id rem cum odio
-              laudantium nihil dolorum. Voluptate ab officia, laborum
-              exercitationem commodi autem possimus doloremque quisquam ut amet?
-              Fuga veritatis officia sed sunt quae! Reiciendis vitae quam
-              tempore vel beatae ea modi deleniti illum minus eveniet soluta
-              ullam molestiae officia vero, tempora laborum est voluptate. Enim,
-              modi possimus. Modi consequatur adipisci aspernatur totam amet eos
-              corporis eius est minus magnam.
+              Rumus yang digunakan dalam perhitungan adalah sebagai berikut:
             </Text>
+            <Code colorScheme="yellow">
+              Grades = (nilaiAverageMahasiswa / batasNilaiMax) x nilaiBobot
+            </Code>
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>Close</Button>
