@@ -44,7 +44,7 @@ import {
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { FaCalculator, FaEdit, FaInfo, FaSave } from "react-icons/fa";
 import Layout, { siteTitle } from "../components/Layout";
@@ -93,13 +93,7 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
     uasWeight: dataGradesAverage[3].valueWeight,
     projectWeight: dataGradesAverage[4].valueWeight,
   });
-  const [average, setAverage] = useState<gradesFormProps>({
-    kehadiran: dataGradesAverage[0].value,
-    tugas: dataGradesAverage[1].value,
-    uts: dataGradesAverage[2].value,
-    uas: dataGradesAverage[3].value,
-    project: dataGradesAverage[4].value,
-  });
+  const [average, setAverage] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const toast = useToast();
@@ -110,11 +104,11 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      kehadiran: average.kehadiran,
-      tugas: average.tugas,
-      uts: average.uts,
-      uas: average.uas,
-      project: average.project,
+      kehadiran: dataGradesAverage[0].value,
+      tugas: dataGradesAverage[1].value,
+      uts: dataGradesAverage[2].value,
+      uas: dataGradesAverage[3].value,
+      project: dataGradesAverage[4].value,
     },
   });
   const {
@@ -131,19 +125,25 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
     },
   });
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const kehadiran = Number(data.kehadiran);
-    const tugas = Number(data.tugas);
-    const uts = Number(data.uts);
-    const uas = Number(data.uas);
-    const project = Number(data.project);
+    const kehadiranAverage =
+      (data.kehadiran / dataGradesAverage[0].maxVal) * weights.kehadiranWeight;
+    const tugasAverage =
+      (data.tugas / dataGradesAverage[1].maxVal) * weights.tugasWeight;
+    const utsAverage =
+      (data.uts / dataGradesAverage[2].maxVal) * weights.utsWeight;
+    const uasAverage =
+      (data.uas / dataGradesAverage[3].maxVal) * weights.uasWeight;
+    const projectAverage =
+      (data.project / dataGradesAverage[4].maxVal) * weights.projectWeight;
 
-    setAverage({
-      kehadiran,
-      tugas,
-      uts,
-      uas,
-      project,
-    });
+    const totalAverage =
+      kehadiranAverage +
+      tugasAverage +
+      utsAverage +
+      uasAverage +
+      projectAverage;
+
+    setAverage(totalAverage);
   };
   const onSubmitWeight: SubmitHandler<FieldValues> = (data) => {
     const kehadiranWeight = Number(data.kehadiranWeight);
@@ -184,6 +184,33 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
     });
   };
 
+  useEffect(() => {
+    const kehadiranAverage =
+      (dataGradesAverage[0].value / dataGradesAverage[0].maxVal) *
+      weights.kehadiranWeight;
+    const tugasAverage =
+      (dataGradesAverage[1].value / dataGradesAverage[1].maxVal) *
+      weights.tugasWeight;
+    const utsAverage =
+      (dataGradesAverage[2].value / dataGradesAverage[2].maxVal) *
+      weights.utsWeight;
+    const uasAverage =
+      (dataGradesAverage[3].value / dataGradesAverage[3].maxVal) *
+      weights.uasWeight;
+    const projectAverage =
+      (dataGradesAverage[4].value / dataGradesAverage[4].maxVal) *
+      weights.projectWeight;
+
+    const totalAverage =
+      kehadiranAverage +
+      tugasAverage +
+      utsAverage +
+      uasAverage +
+      projectAverage;
+
+    setAverage(totalAverage);
+  }, [dataGradesAverage, weights]);
+
   return (
     <Layout>
       <Head>
@@ -221,19 +248,92 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
 
         <Stack gap="2">
           {/* Grades Result */}
-          <Box
-            border={"1px"}
-            borderColor={"teal.400"}
-            bgColor={"teal.100"}
-            width={"full"}
-            padding={"0.75rem"}
-            rounded={"md"}
-          >
-            <Text>
-              Your result grades is <Text as="b">A</Text> with a{" "}
-              <Text as="b">90%</Text> average, <Text as="b">Sangat Baik</Text>.
-            </Text>
-          </Box>
+          {Math.round(average) >= 70 ? (
+            <Box
+              border={"1px"}
+              borderColor={"teal.400"}
+              bgColor={"teal.100"}
+              width={"full"}
+              padding={"0.75rem"}
+              rounded={"md"}
+            >
+              <Text>
+                Your result grades is <Text as="b">A</Text> with a{" "}
+                <Text as="b">
+                  ({average}% == {Math.round(average)}%)
+                </Text>{" "}
+                average, <Text as="b">Sangat Baik</Text>.
+              </Text>
+            </Box>
+          ) : Math.round(average) >= 60 && Math.round(average) < 70 ? (
+            <Box
+              border={"1px"}
+              borderColor={"green.400"}
+              bgColor={"green.100"}
+              width={"full"}
+              padding={"0.75rem"}
+              rounded={"md"}
+            >
+              <Text>
+                Your result grades is <Text as="b">B</Text> with a{" "}
+                <Text as="b">
+                  ({average}% == {Math.round(average)}%)
+                </Text>{" "}
+                average, <Text as="b">Baik</Text>.
+              </Text>
+            </Box>
+          ) : Math.round(average) >= 50 && Math.round(average) < 60 ? (
+            <Box
+              border={"1px"}
+              borderColor={"yellow.400"}
+              bgColor={"yellow.100"}
+              width={"full"}
+              padding={"0.75rem"}
+              rounded={"md"}
+            >
+              <Text>
+                Your result grades is <Text as="b">C</Text> with a{" "}
+                <Text as="b">
+                  ({average}% == {Math.round(average)}%)
+                </Text>{" "}
+                average, <Text as="b">Cukup</Text>.
+              </Text>
+            </Box>
+          ) : Math.round(average) >= 40 && Math.round(average) < 50 ? (
+            <Box
+              border={"1px"}
+              borderColor={"pink.400"}
+              bgColor={"pink.100"}
+              width={"full"}
+              padding={"0.75rem"}
+              rounded={"md"}
+            >
+              <Text>
+                Your result grades is <Text as="b">D</Text> with a{" "}
+                <Text as="b">
+                  ({average}% == {Math.round(average)}%)
+                </Text>{" "}
+                average, <Text as="b">Kurang</Text>.
+              </Text>
+            </Box>
+          ) : (
+            <Box
+              border={"1px"}
+              borderColor={"red.400"}
+              bgColor={"red.100"}
+              width={"full"}
+              padding={"0.75rem"}
+              rounded={"md"}
+            >
+              <Text>
+                Your result grades is <Text as="b">E</Text> with a{" "}
+                <Text as="b">
+                  ({average}% == {Math.round(average)}%)
+                </Text>{" "}
+                average, <Text as="b">Sangat Kurang</Text>.
+              </Text>
+            </Box>
+          )}
 
           {/* Main Input */}
           <Grid
