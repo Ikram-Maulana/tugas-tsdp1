@@ -22,6 +22,13 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Stack,
   Table,
   TableCaption,
@@ -33,12 +40,13 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { FaCalculator, FaInfo, FaSave } from "react-icons/fa";
+import { FaCalculator, FaEdit, FaInfo, FaSave } from "react-icons/fa";
 import Layout, { siteTitle } from "../components/Layout";
 import { gradesAverage, gradesRule } from "../utils/Data";
 
@@ -60,25 +68,121 @@ interface gradesProps {
     label: string;
     value: number;
     maxVal: number;
+    valueWeight: number;
   }[];
   dataGradesRule: {
     id: number;
     predikat: string;
     interval: string;
     keterangan: string;
+    borderColor: string;
+    bgColor: string;
   }[];
 }
 
+interface gradesFormProps {
+  [key: string]: number;
+}
+
 const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
+  const [isEdit, setIsEdit] = useState(false);
+  const [weights, setWeights] = useState<gradesFormProps>({
+    kehadiranWeight: dataGradesAverage[0].valueWeight,
+    tugasWeight: dataGradesAverage[1].valueWeight,
+    utsWeight: dataGradesAverage[2].valueWeight,
+    uasWeight: dataGradesAverage[3].valueWeight,
+    projectWeight: dataGradesAverage[4].valueWeight,
+  });
+  const [average, setAverage] = useState<gradesFormProps>({
+    kehadiran: dataGradesAverage[0].value,
+    tugas: dataGradesAverage[1].value,
+    uts: dataGradesAverage[2].value,
+    uas: dataGradesAverage[3].value,
+    project: dataGradesAverage[4].value,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
+  const toast = useToast();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => console.log(data);
+  } = useForm({
+    defaultValues: {
+      kehadiran: average.kehadiran,
+      tugas: average.tugas,
+      uts: average.uts,
+      uas: average.uas,
+      project: average.project,
+    },
+  });
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    formState: { errors: errors2 },
+  } = useForm({
+    defaultValues: {
+      kehadiranWeight: weights.kehadiranWeight,
+      tugasWeight: weights.tugasWeight,
+      utsWeight: weights.utsWeight,
+      uasWeight: weights.uasWeight,
+      projectWeight: weights.projectWeight,
+    },
+  });
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const kehadiran = Number(data.kehadiran);
+    const tugas = Number(data.tugas);
+    const uts = Number(data.uts);
+    const uas = Number(data.uas);
+    const project = Number(data.project);
+
+    setAverage({
+      kehadiran,
+      tugas,
+      uts,
+      uas,
+      project,
+    });
+  };
+  const onSubmitWeight: SubmitHandler<FieldValues> = (data) => {
+    const kehadiranWeight = Number(data.kehadiranWeight);
+    const tugasWeight = Number(data.tugasWeight);
+    const utsWeight = Number(data.utsWeight);
+    const uasWeight = Number(data.uasWeight);
+    const projectWeight = Number(data.projectWeight);
+
+    const totalWeight =
+      kehadiranWeight + tugasWeight + utsWeight + uasWeight + projectWeight;
+
+    if (totalWeight === 100) {
+      setIsEdit(false);
+      setWeights({
+        kehadiranWeight,
+        tugasWeight,
+        utsWeight,
+        uasWeight,
+        projectWeight,
+      });
+      return toast({
+        title: "Success change the total weighted value.",
+        position: "top-right",
+        isClosable: true,
+        variant: "left-accent",
+        status: "success",
+      });
+    }
+
+    return toast({
+      title: `The total weighted value does not match, over/under ${
+        totalWeight - 100
+      }%.`,
+      position: "top-right",
+      isClosable: true,
+      variant: "left-accent",
+      status: "warning",
+    });
+  };
 
   return (
     <Layout>
@@ -144,69 +248,160 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
               padding={"0.75rem"}
               rounded={"12px"}
             >
-              <Heading size="md" color={"#16173D"} as="h2">
-                Grades Weight
-              </Heading>
-              <form>
-                <FormControl mt={{ base: "2", md: "4" }}>
-                  <FormLabel>Kehadiran</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
-                  <FormLabel>Tugas</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
-                  <FormLabel>UTS</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
-                  <FormLabel>UAS</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
-                  <FormLabel>Project</FormLabel>
-                  <NumberInput max={100} min={0}>
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <Button
-                  leftIcon={<FaSave />}
-                  bgColor={"#242562"}
-                  color={"white"}
-                  _hover={{ bgColor: "#16173D" }}
-                  mt={{ base: "3", md: "4" }}
+              <Flex justifyContent="start" alignItems="center" gap="2">
+                <Heading size="md" color={"#16173D"} as="h2">
+                  Grades Weight
+                </Heading>
+                <Popover placement="top-start">
+                  <PopoverTrigger>
+                    <Button size={"xs"}>
+                      <FaInfo />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <PopoverHeader fontWeight="semibold">
+                      Grades Weight Rules
+                    </PopoverHeader>
+                    <PopoverArrow />
+                    <PopoverCloseButton />
+                    <PopoverBody>
+                      the grand total of the{" "}
+                      <Code colorScheme="yellow">
+                        Kehadiran + Tugas + UTS + UAS + Project
+                      </Code>{" "}
+                      sums must be 100%, if the grand total exceeds 100% it will
+                      fail.
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
+              <form onSubmit={handleSubmit2(onSubmitWeight)}>
+                <FormControl
+                  mt={{ base: "2", md: "4" }}
+                  isDisabled={!isEdit && true}
+                  isReadOnly={!isEdit && true}
+                  cursor={!isEdit ? "not-allowed" : "auto"}
                 >
-                  Save
-                </Button>
+                  <FormLabel>Kehadiran (%)</FormLabel>
+                  <NumberInput max={100} min={0}>
+                    <NumberInputField
+                      {...register2("kehadiranWeight", {
+                        max: 100,
+                        min: 0,
+                      })}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={!isEdit && true}
+                  isReadOnly={!isEdit && true}
+                  cursor={!isEdit ? "not-allowed" : "auto"}
+                >
+                  <FormLabel>Tugas (%)</FormLabel>
+                  <NumberInput max={100} min={0}>
+                    <NumberInputField
+                      {...register2("tugasWeight", {
+                        max: 100,
+                        min: 0,
+                      })}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={!isEdit && true}
+                  isReadOnly={!isEdit && true}
+                  cursor={!isEdit ? "not-allowed" : "auto"}
+                >
+                  <FormLabel>UTS (%)</FormLabel>
+                  <NumberInput max={100} min={0}>
+                    <NumberInputField
+                      {...register2("utsWeight", {
+                        max: 100,
+                        min: 0,
+                      })}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={!isEdit && true}
+                  isReadOnly={!isEdit && true}
+                  cursor={!isEdit ? "not-allowed" : "auto"}
+                >
+                  <FormLabel>UAS (%)</FormLabel>
+                  <NumberInput max={100} min={0}>
+                    <NumberInputField
+                      {...register2("uasWeight", {
+                        max: 100,
+                        min: 0,
+                      })}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={!isEdit && true}
+                  isReadOnly={!isEdit && true}
+                  cursor={!isEdit ? "not-allowed" : "auto"}
+                >
+                  <FormLabel>Project (%)</FormLabel>
+                  <NumberInput max={100} min={0}>
+                    <NumberInputField
+                      {...register2("projectWeight", {
+                        max: 100,
+                        min: 0,
+                      })}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </FormControl>
+                {!isEdit ? (
+                  <Button
+                    leftIcon={<FaEdit />}
+                    bgColor={"orange.500"}
+                    color={"white"}
+                    _hover={{ bgColor: "orange.600" }}
+                    mt={{ base: "3", md: "4" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsEdit(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <Button
+                    leftIcon={<FaSave />}
+                    bgColor={"#242562"}
+                    color={"white"}
+                    _hover={{ bgColor: "#16173D" }}
+                    mt={{ base: "3", md: "4" }}
+                    type="submit"
+                  >
+                    Save
+                  </Button>
+                )}
               </form>
             </GridItem>
 
@@ -221,13 +416,22 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                 Grades Average
               </Heading>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl mt={{ base: "2", md: "4" }}>
+                <FormControl
+                  mt={{ base: "2", md: "4" }}
+                  isDisabled={
+                    isEdit || weights.kehadiranWeight === 0 ? true : false
+                  }
+                  isReadOnly={
+                    isEdit || weights.kehadiranWeight === 0 ? true : false
+                  }
+                  cursor={
+                    isEdit || weights.kehadiranWeight === 0
+                      ? "not-allowed"
+                      : "auto"
+                  }
+                >
                   <FormLabel>Kehadiran</FormLabel>
-                  <NumberInput
-                    max={dataGradesAverage[0].maxVal}
-                    min={0}
-                    defaultValue={dataGradesAverage[0].value}
-                  >
+                  <NumberInput max={dataGradesAverage[0].maxVal} min={0}>
                     <NumberInputField
                       {...register("kehadiran", {
                         max: dataGradesAverage[0].maxVal,
@@ -246,13 +450,20 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={
+                    isEdit || weights.tugasWeight === 0 ? true : false
+                  }
+                  isReadOnly={
+                    isEdit || weights.tugasWeight === 0 ? true : false
+                  }
+                  cursor={
+                    isEdit || weights.tugasWeight === 0 ? "not-allowed" : "auto"
+                  }
+                >
                   <FormLabel>Tugas</FormLabel>
-                  <NumberInput
-                    max={dataGradesAverage[1].maxVal}
-                    min={0}
-                    defaultValue={dataGradesAverage[1].value}
-                  >
+                  <NumberInput max={dataGradesAverage[1].maxVal} min={0}>
                     <NumberInputField
                       {...register("tugas", {
                         max: dataGradesAverage[1].maxVal,
@@ -271,13 +482,16 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={isEdit || weights.utsWeight === 0 ? true : false}
+                  isReadOnly={isEdit || weights.utsWeight === 0 ? true : false}
+                  cursor={
+                    isEdit || weights.utsWeight === 0 ? "not-allowed" : "auto"
+                  }
+                >
                   <FormLabel>UTS</FormLabel>
-                  <NumberInput
-                    max={dataGradesAverage[2].maxVal}
-                    min={0}
-                    defaultValue={dataGradesAverage[2].value}
-                  >
+                  <NumberInput max={dataGradesAverage[2].maxVal} min={0}>
                     <NumberInputField
                       {...register("uts", {
                         max: dataGradesAverage[2].maxVal,
@@ -296,13 +510,16 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={isEdit || weights.uasWeight === 0 ? true : false}
+                  isReadOnly={isEdit || weights.uasWeight === 0 ? true : false}
+                  cursor={
+                    isEdit || weights.uasWeight === 0 ? "not-allowed" : "auto"
+                  }
+                >
                   <FormLabel>UAS</FormLabel>
-                  <NumberInput
-                    max={dataGradesAverage[3].maxVal}
-                    min={0}
-                    defaultValue={dataGradesAverage[3].value}
-                  >
+                  <NumberInput max={dataGradesAverage[3].maxVal} min={0}>
                     <NumberInputField
                       {...register("uas", {
                         max: dataGradesAverage[3].maxVal,
@@ -321,13 +538,22 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl mt={{ base: "2", md: "3" }}>
+                <FormControl
+                  mt={{ base: "2", md: "3" }}
+                  isDisabled={
+                    isEdit || weights.projectWeight === 0 ? true : false
+                  }
+                  isReadOnly={
+                    isEdit || weights.projectWeight === 0 ? true : false
+                  }
+                  cursor={
+                    isEdit || weights.projectWeight === 0
+                      ? "not-allowed"
+                      : "auto"
+                  }
+                >
                   <FormLabel>Project</FormLabel>
-                  <NumberInput
-                    max={dataGradesAverage[4].maxVal}
-                    min={0}
-                    defaultValue={dataGradesAverage[4].value}
-                  >
+                  <NumberInput max={dataGradesAverage[4].maxVal} min={0}>
                     <NumberInputField
                       {...register("project", {
                         max: dataGradesAverage[4].maxVal,
@@ -346,16 +572,29 @@ const Home = ({ dataGradesAverage, dataGradesRule }: gradesProps) => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <Button
-                  leftIcon={<FaCalculator />}
-                  bgColor={"#242562"}
-                  color={"white"}
-                  _hover={{ bgColor: "#16173D" }}
-                  mt={{ base: "3", md: "4" }}
-                  type="submit"
-                >
-                  Calculate
-                </Button>
+                {isEdit ? (
+                  <Button
+                    leftIcon={<FaCalculator />}
+                    bgColor={"#242562"}
+                    color={"white"}
+                    _hover={{ bgColor: "#16173D" }}
+                    mt={{ base: "3", md: "4" }}
+                    disabled={true}
+                  >
+                    Calculate
+                  </Button>
+                ) : (
+                  <Button
+                    leftIcon={<FaCalculator />}
+                    bgColor={"#242562"}
+                    color={"white"}
+                    _hover={{ bgColor: "#16173D" }}
+                    mt={{ base: "3", md: "4" }}
+                    type="submit"
+                  >
+                    Calculate
+                  </Button>
+                )}
               </form>
             </GridItem>
           </Grid>
